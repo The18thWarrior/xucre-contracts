@@ -38,7 +38,12 @@ const config: HardhatUserConfig = {
       }
     }
   },
-  networks: networks
+  networks: networks,
+  etherscan: {
+    apiKey: {
+      polygon: process.env.ETHERSCAN_POLYGON_API_KEY as string
+    }
+  }
 };
 
 

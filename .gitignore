@@ -12,3 +12,6 @@
 node_modules
 .yarn
 .env
+.openzeppelin/*
+.openzeppelin
+.openzeppelin/

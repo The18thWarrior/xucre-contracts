@@ -10,11 +10,11 @@ async function main() {
   //console.log('waiting for deployProxy', xucre);
   //const estimatedGas = await ethers.provider.estimateGas(xucre);
   
-  const xucre2 = await Xucre.interface.encodeDeploy([ethers.utils.getAddress('0x1292435351CC10A676B8372678Aa40bcC37E7fcc'), 'Xucre', 'XRE']);
+  const xucre2 = await Xucre.interface.encodeDeploy([ethers.utils.getAddress('0x358eB621894B55805CE16225b2504523d421d3A6'), 'Xucre', 'XRE']);
   const estimatedGas = await ethers.provider.estimateGas({ data: xucre2 });
   console.log('gas estimate', estimatedGas);
 
-  const xucre = await Xucre.deploy(ethers.utils.getAddress('0x1292435351CC10A676B8372678Aa40bcC37E7fcc'), 'Xucre', 'XRE', {gasPrice: 70389863643});
+  const xucre = await Xucre.deploy(ethers.utils.getAddress('0x358eB621894B55805CE16225b2504523d421d3A6'), 'Xucre', 'XRE', {gasPrice: 70389863643});
   await xucre.deployed();
   console.log("Xucre deployed to:", xucre.address);
   
