@@ -15,3 +15,9 @@ node_modules
 .openzeppelin/*
 .openzeppelin
 .openzeppelin/
+.vscode
+artifacts/*
+cache
+.vscode/*
+./artifacts/*
+cache/*

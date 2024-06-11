@@ -3,3 +3,4 @@
 /* eslint-disable */
 export { Lock__factory } from "./Lock__factory";
 export { Xucre__factory } from "./Xucre__factory";
+export { XucreETF__factory } from "./XucreETF__factory";

@@ -3,3 +3,4 @@
 /* eslint-disable */
 export type { Lock } from "./Lock";
 export type { Xucre } from "./Xucre";
+export type { XucreETF } from "./XucreETF";
