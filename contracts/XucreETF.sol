@@ -30,7 +30,7 @@ contract XucreETF is ERC721, ERC721Pausable, AccessControl {
 
     ISwapRouter public immutable xucre_swapRouter;
 
-    address public immutable XUCRE;
+    address public immutable feeToken;
     uint24 public immutable poolFee;
 
     uint256 private xucre_nextTokenId;
@@ -53,8 +53,6 @@ contract XucreETF is ERC721, ERC721Pausable, AccessControl {
         address paymentToken
     );
 
-    event Console(uint256 message);
-
     constructor(
         address owner_xucre,
         address swapRouter_xucre,
@@ -69,13 +67,17 @@ contract XucreETF is ERC721, ERC721Pausable, AccessControl {
         _grantRole(MINTER_ROLE, owner_xucre);
         _grantRole(BATCH_CALL_ROLE, owner_xucre);
         xucre_swapRouter = ISwapRouter(swapRouter_xucre);
-        XUCRE = tokenContract_xucre;
+        feeToken = tokenContract_xucre;
         poolFee = poolFee_xucre;
     }
 
-    receive() external payable {}
+    receive() external payable {
+        revert("Ether not accepted");
+    }
 
-    fallback() external payable {}
+    fallback() external payable {
+        revert("Function does not exist");
+    }
 
     function withdrawBalance(
         address xucre_to
@@ -257,7 +259,7 @@ contract XucreETF is ERC721, ERC721Pausable, AccessControl {
         uint256 xucre_totalIn = checkBalance(to_xucre, pt_xucre);
         require(xucre_totalIn >= ti_xucre, "Insufficient balance");
         // Fee calculation
-        uint256 feeTotal = (ti_xucre / 100);
+        uint256 feeTotal = (ti_xucre / 50);
         uint256 totalAfterFees = !cf_xucre ? ti_xucre : ti_xucre - feeTotal;
 
         // Transfer `totalIn` of USDT to this contract.
@@ -277,7 +279,7 @@ contract XucreETF is ERC721, ERC721Pausable, AccessControl {
         if (cf_xucre) {
             ISwapRouter.ExactInputParams memory feeParams = ISwapRouter
                 .ExactInputParams({
-                    path: abi.encodePacked(pt_xucre, poolFee, XUCRE),
+                    path: abi.encodePacked(pt_xucre, poolFee, feeToken),
                     recipient: address(this),
                     deadline: block.timestamp,
                     amountIn: feeTotal,

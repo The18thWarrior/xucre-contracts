@@ -1231,8 +1231,8 @@
       ]
     },
     "/Users/jp/Desktop/Repos/xucre/xucre-contracts/contracts/XucreETF.sol": {
-      "lastModificationDate": 1718079140419,
-      "contentHash": "1d2b2d3d1c54215900ba439e0eb89fe6",
+      "lastModificationDate": 1726348920625,
+      "contentHash": "b8445a4bdc5deb2058a79fcaac1c53ef",
       "sourceName": "contracts/XucreETF.sol",
       "solcConfig": {
         "version": "0.8.20",

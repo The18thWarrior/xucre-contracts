@@ -15,7 +15,7 @@ const networks = {
     gasPrice: 8000000000,
   },
   polygon: {
-    url: process.env.POLYGON_NETWORK_URL as string,
+    url: 'https://polygon-mainnet.g.alchemy.com/v2/bsM5z8TEIScYSa3DOSka2nmm8VDmFa21',
     accounts: [process.env.DEVACCOUNTKEY as string],
     timeout: 600000,
     //gas: 2100000,
@@ -27,6 +27,11 @@ const networks = {
     timeout: 600000,
     //gas: 2100000,
     //gasPrice: 8000000000,
+  },
+  ethsandbox: {
+    url: 'https://rpc.buildbear.io/pregnant-bedlam-1666118b',
+    accounts: [process.env.DEVACCOUNTKEY as string],
+    timeout: 600000,
   },
   ethereum: {
     url: process.env.RPC_URL as string,
@@ -49,7 +54,8 @@ const config: HardhatUserConfig = {
   networks: networks,
   etherscan: {
     apiKey: {
-      polygon: process.env.ETHERSCAN_POLYGON_API_KEY as string
+      polygon: process.env.ETHERSCAN_POLYGON_API_KEY as string,
+      ethereum: process.env.ETHERSCAN_API_KEY as string
     }
   }
 };

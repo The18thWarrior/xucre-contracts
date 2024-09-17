@@ -33,10 +33,10 @@ export interface XucreETFInterface extends utils.Interface {
     "DEFAULT_ADMIN_ROLE()": FunctionFragment;
     "MINTER_ROLE()": FunctionFragment;
     "PAUSER_ROLE()": FunctionFragment;
-    "XUCRE()": FunctionFragment;
     "approve(address,uint256)": FunctionFragment;
     "balanceOf(address)": FunctionFragment;
     "calculateFromPercent(uint256,uint256)": FunctionFragment;
+    "feeToken()": FunctionFragment;
     "getApproved(uint256)": FunctionFragment;
     "getRoleAdmin(bytes32)": FunctionFragment;
     "grantRole(bytes32,address)": FunctionFragment;
@@ -72,10 +72,10 @@ export interface XucreETFInterface extends utils.Interface {
       | "DEFAULT_ADMIN_ROLE"
       | "MINTER_ROLE"
       | "PAUSER_ROLE"
-      | "XUCRE"
       | "approve"
       | "balanceOf"
       | "calculateFromPercent"
+      | "feeToken"
       | "getApproved"
       | "getRoleAdmin"
       | "grantRole"
@@ -121,7 +121,6 @@ export interface XucreETFInterface extends utils.Interface {
     functionFragment: "PAUSER_ROLE",
     values?: undefined
   ): string;
-  encodeFunctionData(functionFragment: "XUCRE", values?: undefined): string;
   encodeFunctionData(
     functionFragment: "approve",
     values: [PromiseOrValue<string>, PromiseOrValue<BigNumberish>]
@@ -134,6 +133,7 @@ export interface XucreETFInterface extends utils.Interface {
     functionFragment: "calculateFromPercent",
     values: [PromiseOrValue<BigNumberish>, PromiseOrValue<BigNumberish>]
   ): string;
+  encodeFunctionData(functionFragment: "feeToken", values?: undefined): string;
   encodeFunctionData(
     functionFragment: "getApproved",
     values: [PromiseOrValue<BigNumberish>]
@@ -272,13 +272,13 @@ export interface XucreETFInterface extends utils.Interface {
     functionFragment: "PAUSER_ROLE",
     data: BytesLike
   ): Result;
-  decodeFunctionResult(functionFragment: "XUCRE", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "approve", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "balanceOf", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "calculateFromPercent",
     data: BytesLike
   ): Result;
+  decodeFunctionResult(functionFragment: "feeToken", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "getApproved",
     data: BytesLike
@@ -352,7 +352,6 @@ export interface XucreETFInterface extends utils.Interface {
   events: {
     "Approval(address,address,uint256)": EventFragment;
     "ApprovalForAll(address,address,bool)": EventFragment;
-    "Console(uint256)": EventFragment;
     "Mint(address,address[],uint256[],uint24[],uint256,address)": EventFragment;
     "Paused(address)": EventFragment;
     "RoleAdminChanged(bytes32,bytes32,bytes32)": EventFragment;
@@ -365,7 +364,6 @@ export interface XucreETFInterface extends utils.Interface {
 
   getEvent(nameOrSignatureOrTopic: "Approval"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "ApprovalForAll"): EventFragment;
-  getEvent(nameOrSignatureOrTopic: "Console"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "Mint"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "Paused"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "RoleAdminChanged"): EventFragment;
@@ -399,13 +397,6 @@ export type ApprovalForAllEvent = TypedEvent<
 >;
 
 export type ApprovalForAllEventFilter = TypedEventFilter<ApprovalForAllEvent>;
-
-export interface ConsoleEventObject {
-  message: BigNumber;
-}
-export type ConsoleEvent = TypedEvent<[BigNumber], ConsoleEventObject>;
-
-export type ConsoleEventFilter = TypedEventFilter<ConsoleEvent>;
 
 export interface MintEventObject {
   to: string;
@@ -535,8 +526,6 @@ export interface XucreETF extends BaseContract {
 
     PAUSER_ROLE(overrides?: CallOverrides): Promise<[string]>;
 
-    XUCRE(overrides?: CallOverrides): Promise<[string]>;
-
     approve(
       to: PromiseOrValue<string>,
       tokenId: PromiseOrValue<BigNumberish>,
@@ -553,6 +542,8 @@ export interface XucreETF extends BaseContract {
       bps_xucre: PromiseOrValue<BigNumberish>,
       overrides?: CallOverrides
     ): Promise<[BigNumber]>;
+
+    feeToken(overrides?: CallOverrides): Promise<[string]>;
 
     getApproved(
       tokenId: PromiseOrValue<BigNumberish>,
@@ -707,8 +698,6 @@ export interface XucreETF extends BaseContract {
 
   PAUSER_ROLE(overrides?: CallOverrides): Promise<string>;
 
-  XUCRE(overrides?: CallOverrides): Promise<string>;
-
   approve(
     to: PromiseOrValue<string>,
     tokenId: PromiseOrValue<BigNumberish>,
@@ -725,6 +714,8 @@ export interface XucreETF extends BaseContract {
     bps_xucre: PromiseOrValue<BigNumberish>,
     overrides?: CallOverrides
   ): Promise<BigNumber>;
+
+  feeToken(overrides?: CallOverrides): Promise<string>;
 
   getApproved(
     tokenId: PromiseOrValue<BigNumberish>,
@@ -879,8 +870,6 @@ export interface XucreETF extends BaseContract {
 
     PAUSER_ROLE(overrides?: CallOverrides): Promise<string>;
 
-    XUCRE(overrides?: CallOverrides): Promise<string>;
-
     approve(
       to: PromiseOrValue<string>,
       tokenId: PromiseOrValue<BigNumberish>,
@@ -897,6 +886,8 @@ export interface XucreETF extends BaseContract {
       bps_xucre: PromiseOrValue<BigNumberish>,
       overrides?: CallOverrides
     ): Promise<BigNumber>;
+
+    feeToken(overrides?: CallOverrides): Promise<string>;
 
     getApproved(
       tokenId: PromiseOrValue<BigNumberish>,
@@ -1062,9 +1053,6 @@ export interface XucreETF extends BaseContract {
       approved?: null
     ): ApprovalForAllEventFilter;
 
-    "Console(uint256)"(message?: null): ConsoleEventFilter;
-    Console(message?: null): ConsoleEventFilter;
-
     "Mint(address,address[],uint256[],uint24[],uint256,address)"(
       to?: null,
       targetTokens?: null,
@@ -1159,8 +1147,6 @@ export interface XucreETF extends BaseContract {
 
     PAUSER_ROLE(overrides?: CallOverrides): Promise<BigNumber>;
 
-    XUCRE(overrides?: CallOverrides): Promise<BigNumber>;
-
     approve(
       to: PromiseOrValue<string>,
       tokenId: PromiseOrValue<BigNumberish>,
@@ -1177,6 +1163,8 @@ export interface XucreETF extends BaseContract {
       bps_xucre: PromiseOrValue<BigNumberish>,
       overrides?: CallOverrides
     ): Promise<BigNumber>;
+
+    feeToken(overrides?: CallOverrides): Promise<BigNumber>;
 
     getApproved(
       tokenId: PromiseOrValue<BigNumberish>,
@@ -1334,8 +1322,6 @@ export interface XucreETF extends BaseContract {
 
     PAUSER_ROLE(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
-    XUCRE(overrides?: CallOverrides): Promise<PopulatedTransaction>;
-
     approve(
       to: PromiseOrValue<string>,
       tokenId: PromiseOrValue<BigNumberish>,
@@ -1352,6 +1338,8 @@ export interface XucreETF extends BaseContract {
       bps_xucre: PromiseOrValue<BigNumberish>,
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
+
+    feeToken(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     getApproved(
       tokenId: PromiseOrValue<BigNumberish>,
