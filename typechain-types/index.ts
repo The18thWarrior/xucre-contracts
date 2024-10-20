@@ -78,3 +78,5 @@ export type { Xucre } from "./contracts/Xucre";
 export { Xucre__factory } from "./factories/contracts/Xucre__factory";
 export type { XucreETF } from "./contracts/XucreETF";
 export { XucreETF__factory } from "./factories/contracts/XucreETF__factory";
+export type { XucreETFV4 } from "./contracts/XucreETFV4";
+export { XucreETFV4__factory } from "./factories/contracts/XucreETFV4__factory";

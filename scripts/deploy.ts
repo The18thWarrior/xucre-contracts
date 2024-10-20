@@ -8,7 +8,7 @@ import { BigNumber } from "ethers";
 
 const deploy = false;
 
-const SWAP_ROUTER_ADDRESS = "0xE592427A0AEce92De3Edee1F18E0157C05861564";
+const SWAP_ROUTER_ADDRESS = "0x2626664c2603336E57B271c5C0b26F421741e481";
 const DEV_ACCOUNT_ADDRESS = "0x19316109C70084D0E34C6b28AD5b6298aFB2dB3c";
 const OWNER_ADDRESS = "0x19316109C70084D0E34C6b28AD5b6298aFB2dB3c";
 const DAI = "0x8f3Cf7ad23Cd3CaDbD9735AFf958023239c6A063";
@@ -98,18 +98,19 @@ async function main() {
   const signer = ethers.provider.getSigner(DEV_ACCOUNT_ADDRESS);
   //console.log(signer);
   const signerAddress = await signer.getAddress();
-  const poolFee = BigNumber.from(3000);
+  const poolFee = BigNumber.from(100);
   console.log(signerAddress)
 
   const XUCRE_CONTRACT = await XUCRE(signer);
   const WETH_CONTRACT = await ERC20__factory.connect(WETH, signer);
-  
+  const FEE_TOKEN_CONTRACT = await ERC20__factory.connect('0x50c5725949A6F0c72E6C4a641F24049A917DB0Cb', signer);
   
   //if (deploy) {
     const Xucre = await ethers.getContractFactory("XucreETF");
-    const xucre = await Xucre.deploy(ethers.utils.getAddress(OWNER_ADDRESS), ethers.utils.getAddress(SWAP_ROUTER_ADDRESS), WETH_CONTRACT.address,poolFee);
+    const xucre = await Xucre.deploy(ethers.utils.getAddress(OWNER_ADDRESS), ethers.utils.getAddress(SWAP_ROUTER_ADDRESS), FEE_TOKEN_CONTRACT.address,poolFee);
     await xucre.deployed();
     console.log("XucreETF deployed to:", xucre.address);
+    console.log(`verification script: npx hardhat verify --network <network> --contract contracts/XucreETF.sol:XucreETF ${xucre.address} ${ethers.utils.getAddress(OWNER_ADDRESS)} ${ethers.utils.getAddress(SWAP_ROUTER_ADDRESS)} ${FEE_TOKEN_CONTRACT.address} ${poolFee}`);
   
   //}
     

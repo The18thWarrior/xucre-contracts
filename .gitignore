@@ -18,6 +18,8 @@ node_modules
 .vscode
 artifacts/*
 cache
+cache/
+/cache
 .vscode/*
 ./artifacts/*
 cache/*

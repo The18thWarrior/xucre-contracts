@@ -152,6 +152,10 @@ declare module "hardhat/types/runtime" {
       name: "XucreETF",
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.XucreETF__factory>;
+    getContractFactory(
+      name: "XucreETFV4",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.XucreETFV4__factory>;
 
     getContractAt(
       name: "AccessControlUpgradeable",
@@ -328,6 +332,11 @@ declare module "hardhat/types/runtime" {
       address: string,
       signer?: ethers.Signer
     ): Promise<Contracts.XucreETF>;
+    getContractAt(
+      name: "XucreETFV4",
+      address: string,
+      signer?: ethers.Signer
+    ): Promise<Contracts.XucreETFV4>;
 
     // default types
     getContractFactory(

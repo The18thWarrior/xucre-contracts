@@ -1,6 +1,7 @@
 require('@openzeppelin/hardhat-upgrades');
-import { HardhatUserConfig } from "hardhat/config";
+import type { HardhatUserConfig } from "hardhat/types";
 import "@nomicfoundation/hardhat-toolbox";
+//import "@nomicfoundation/hardhat-verify";
 require("dotenv").config();
 
 const networks = {
@@ -28,13 +29,13 @@ const networks = {
     //gas: 2100000,
     //gasPrice: 8000000000,
   },
-  ethsandbox: {
-    url: 'https://rpc.buildbear.io/pregnant-bedlam-1666118b',
+  ethereum: {
+    url: 'https://eth-mainnet.g.alchemy.com/v2/bsM5z8TEIScYSa3DOSka2nmm8VDmFa21',
     accounts: [process.env.DEVACCOUNTKEY as string],
     timeout: 600000,
   },
-  ethereum: {
-    url: process.env.RPC_URL as string,
+  base: {
+    url: 'https://base-mainnet.g.alchemy.com/v2/bsM5z8TEIScYSa3DOSka2nmm8VDmFa21',
     accounts: [process.env.DEVACCOUNTKEY as string],
     timeout: 600000,
   }
@@ -55,8 +56,19 @@ const config: HardhatUserConfig = {
   etherscan: {
     apiKey: {
       polygon: process.env.ETHERSCAN_POLYGON_API_KEY as string,
-      ethereum: process.env.ETHERSCAN_API_KEY as string
-    }
+      mainnet: process.env.ETHERSCAN_API_KEY as string,
+      base: process.env.ETHERSCAN_BASE_API_KEY as string
+    },
+    customChains: [
+      {
+        network: "base",
+        chainId: 8453,
+        urls: {
+          apiURL: "https://api.basescan.org/api",
+          browserURL: "https://basescan.org"
+        }
+      }
+    ]
   }
 };
 

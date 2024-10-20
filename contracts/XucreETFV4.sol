@@ -14,7 +14,7 @@ import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/utils/Pausable.sol";
 import "@openzeppelin/contracts/access/AccessControl.sol";
 
-contract XucreETF is Pausable, AccessControl {
+contract XucreETFV4 is Pausable, AccessControl {
     struct ETFDefinition {
         address[] xucre_targetTokens;
         uint256[] xucre_inputAmounts;
@@ -166,30 +166,26 @@ contract XucreETF is Pausable, AccessControl {
         );
 
         // Validate wallet balance for source token
-        if (pt_xucre != address(0)) {
-            require(checkBalance(to_xucre, pt_xucre) >= ti_xucre, "Insufficient balance");
-        } else {
-            require(msg.value >= ti_xucre, "Insufficient balance");
-        }
+        uint256 xucre_totalIn = checkBalance(to_xucre, pt_xucre);
+        require(xucre_totalIn >= ti_xucre, "Insufficient balance");
         // Fee calculation
         uint256 feeTotal = (ti_xucre / 50);
         uint256 totalAfterFees = !cf_xucre ? ti_xucre : ti_xucre - feeTotal;
 
-        if (pt_xucre != address(0)) {
-            // Transfer `totalIn` of USDT to this contract.
-            TransferHelper.safeTransferFrom(
-                pt_xucre,
-                to_xucre,
-                address(this),
-                ti_xucre
-            );
-            // Approve the router to spend USDT.
-            TransferHelper.safeApprove(
-                pt_xucre,
-                address(xucre_swapRouter),
-                ti_xucre
-            );
-        }
+        // Transfer `totalIn` of USDT to this contract.
+        TransferHelper.safeTransferFrom(
+            pt_xucre,
+            to_xucre,
+            address(this),
+            ti_xucre
+        );
+        // Approve the router to spend USDT.
+        TransferHelper.safeApprove(
+            pt_xucre,
+            address(xucre_swapRouter),
+            ti_xucre
+        );
+
         if (cf_xucre) {
             ISwapRouter.ExactInputParams memory feeParams = ISwapRouter
                 .ExactInputParams({
