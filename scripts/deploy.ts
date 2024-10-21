@@ -8,7 +8,8 @@ import { BigNumber } from "ethers";
 
 const deploy = false;
 
-const SWAP_ROUTER_ADDRESS = "0x2626664c2603336E57B271c5C0b26F421741e481";
+const SWAP_ROUTER_ADDRESS = "0x3fC91A3afd70395Cd496C647d5a6CC9D4B2b7FAD";
+const PERMIT2_ADDRESS = "0x000000000022D473030F116dDEE9F6B43aC78BA3";
 const DEV_ACCOUNT_ADDRESS = "0x19316109C70084D0E34C6b28AD5b6298aFB2dB3c";
 const OWNER_ADDRESS = "0x19316109C70084D0E34C6b28AD5b6298aFB2dB3c";
 const DAI = "0x8f3Cf7ad23Cd3CaDbD9735AFf958023239c6A063";
@@ -107,7 +108,13 @@ async function main() {
   
   //if (deploy) {
     const Xucre = await ethers.getContractFactory("XucreETF");
-    const xucre = await Xucre.deploy(ethers.utils.getAddress(OWNER_ADDRESS), ethers.utils.getAddress(SWAP_ROUTER_ADDRESS), FEE_TOKEN_CONTRACT.address,poolFee);
+    const xucre = await Xucre.deploy(
+      ethers.utils.getAddress(OWNER_ADDRESS), 
+      ethers.utils.getAddress(SWAP_ROUTER_ADDRESS), 
+      ethers.utils.getAddress(PERMIT2_ADDRESS), 
+      FEE_TOKEN_CONTRACT.address,
+      poolFee
+    );
     await xucre.deployed();
     console.log("XucreETF deployed to:", xucre.address);
     console.log(`verification script: npx hardhat verify --network <network> --contract contracts/XucreETF.sol:XucreETF ${xucre.address} ${ethers.utils.getAddress(OWNER_ADDRESS)} ${ethers.utils.getAddress(SWAP_ROUTER_ADDRESS)} ${FEE_TOKEN_CONTRACT.address} ${poolFee}`);

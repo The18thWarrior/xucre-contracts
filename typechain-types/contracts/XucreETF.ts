@@ -39,16 +39,17 @@ export interface XucreETFInterface extends utils.Interface {
     "hasRole(bytes32,address)": FunctionFragment;
     "pause()": FunctionFragment;
     "paused()": FunctionFragment;
+    "permit()": FunctionFragment;
     "poolFee()": FunctionFragment;
     "renounceRole(bytes32,address)": FunctionFragment;
     "revokeRole(bytes32,address)": FunctionFragment;
+    "router()": FunctionFragment;
     "spotExecution(address,address[],uint256[],uint24[],address,uint256)": FunctionFragment;
     "supportsInterface(bytes4)": FunctionFragment;
     "unpause()": FunctionFragment;
     "update(uint24,address)": FunctionFragment;
     "withdrawBalance(address)": FunctionFragment;
     "withdrawTokenBalance(address,address)": FunctionFragment;
-    "xucre_swapRouter()": FunctionFragment;
   };
 
   getFunction(
@@ -63,16 +64,17 @@ export interface XucreETFInterface extends utils.Interface {
       | "hasRole"
       | "pause"
       | "paused"
+      | "permit"
       | "poolFee"
       | "renounceRole"
       | "revokeRole"
+      | "router"
       | "spotExecution"
       | "supportsInterface"
       | "unpause"
       | "update"
       | "withdrawBalance"
       | "withdrawTokenBalance"
-      | "xucre_swapRouter"
   ): FunctionFragment;
 
   encodeFunctionData(
@@ -106,6 +108,7 @@ export interface XucreETFInterface extends utils.Interface {
   ): string;
   encodeFunctionData(functionFragment: "pause", values?: undefined): string;
   encodeFunctionData(functionFragment: "paused", values?: undefined): string;
+  encodeFunctionData(functionFragment: "permit", values?: undefined): string;
   encodeFunctionData(functionFragment: "poolFee", values?: undefined): string;
   encodeFunctionData(
     functionFragment: "renounceRole",
@@ -115,6 +118,7 @@ export interface XucreETFInterface extends utils.Interface {
     functionFragment: "revokeRole",
     values: [PromiseOrValue<BytesLike>, PromiseOrValue<string>]
   ): string;
+  encodeFunctionData(functionFragment: "router", values?: undefined): string;
   encodeFunctionData(
     functionFragment: "spotExecution",
     values: [
@@ -143,10 +147,6 @@ export interface XucreETFInterface extends utils.Interface {
     functionFragment: "withdrawTokenBalance",
     values: [PromiseOrValue<string>, PromiseOrValue<string>]
   ): string;
-  encodeFunctionData(
-    functionFragment: "xucre_swapRouter",
-    values?: undefined
-  ): string;
 
   decodeFunctionResult(
     functionFragment: "BATCH_CALL_ROLE",
@@ -173,12 +173,14 @@ export interface XucreETFInterface extends utils.Interface {
   decodeFunctionResult(functionFragment: "hasRole", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "pause", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "paused", data: BytesLike): Result;
+  decodeFunctionResult(functionFragment: "permit", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "poolFee", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "renounceRole",
     data: BytesLike
   ): Result;
   decodeFunctionResult(functionFragment: "revokeRole", data: BytesLike): Result;
+  decodeFunctionResult(functionFragment: "router", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "spotExecution",
     data: BytesLike
@@ -195,10 +197,6 @@ export interface XucreETFInterface extends utils.Interface {
   ): Result;
   decodeFunctionResult(
     functionFragment: "withdrawTokenBalance",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
-    functionFragment: "xucre_swapRouter",
     data: BytesLike
   ): Result;
 
@@ -332,6 +330,8 @@ export interface XucreETF extends BaseContract {
 
     paused(overrides?: CallOverrides): Promise<[boolean]>;
 
+    permit(overrides?: CallOverrides): Promise<[string]>;
+
     poolFee(overrides?: CallOverrides): Promise<[number]>;
 
     renounceRole(
@@ -345,6 +345,8 @@ export interface XucreETF extends BaseContract {
       account: PromiseOrValue<string>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<ContractTransaction>;
+
+    router(overrides?: CallOverrides): Promise<[string]>;
 
     spotExecution(
       to_xucre: PromiseOrValue<string>,
@@ -381,8 +383,6 @@ export interface XucreETF extends BaseContract {
       xucre_tokenAddress: PromiseOrValue<string>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<ContractTransaction>;
-
-    xucre_swapRouter(overrides?: CallOverrides): Promise<[string]>;
   };
 
   BATCH_CALL_ROLE(overrides?: CallOverrides): Promise<string>;
@@ -422,6 +422,8 @@ export interface XucreETF extends BaseContract {
 
   paused(overrides?: CallOverrides): Promise<boolean>;
 
+  permit(overrides?: CallOverrides): Promise<string>;
+
   poolFee(overrides?: CallOverrides): Promise<number>;
 
   renounceRole(
@@ -435,6 +437,8 @@ export interface XucreETF extends BaseContract {
     account: PromiseOrValue<string>,
     overrides?: Overrides & { from?: PromiseOrValue<string> }
   ): Promise<ContractTransaction>;
+
+  router(overrides?: CallOverrides): Promise<string>;
 
   spotExecution(
     to_xucre: PromiseOrValue<string>,
@@ -472,8 +476,6 @@ export interface XucreETF extends BaseContract {
     overrides?: Overrides & { from?: PromiseOrValue<string> }
   ): Promise<ContractTransaction>;
 
-  xucre_swapRouter(overrides?: CallOverrides): Promise<string>;
-
   callStatic: {
     BATCH_CALL_ROLE(overrides?: CallOverrides): Promise<string>;
 
@@ -510,6 +512,8 @@ export interface XucreETF extends BaseContract {
 
     paused(overrides?: CallOverrides): Promise<boolean>;
 
+    permit(overrides?: CallOverrides): Promise<string>;
+
     poolFee(overrides?: CallOverrides): Promise<number>;
 
     renounceRole(
@@ -523,6 +527,8 @@ export interface XucreETF extends BaseContract {
       account: PromiseOrValue<string>,
       overrides?: CallOverrides
     ): Promise<void>;
+
+    router(overrides?: CallOverrides): Promise<string>;
 
     spotExecution(
       to_xucre: PromiseOrValue<string>,
@@ -557,8 +563,6 @@ export interface XucreETF extends BaseContract {
       xucre_tokenAddress: PromiseOrValue<string>,
       overrides?: CallOverrides
     ): Promise<void>;
-
-    xucre_swapRouter(overrides?: CallOverrides): Promise<string>;
   };
 
   filters: {
@@ -640,6 +644,8 @@ export interface XucreETF extends BaseContract {
 
     paused(overrides?: CallOverrides): Promise<BigNumber>;
 
+    permit(overrides?: CallOverrides): Promise<BigNumber>;
+
     poolFee(overrides?: CallOverrides): Promise<BigNumber>;
 
     renounceRole(
@@ -653,6 +659,8 @@ export interface XucreETF extends BaseContract {
       account: PromiseOrValue<string>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<BigNumber>;
+
+    router(overrides?: CallOverrides): Promise<BigNumber>;
 
     spotExecution(
       to_xucre: PromiseOrValue<string>,
@@ -689,8 +697,6 @@ export interface XucreETF extends BaseContract {
       xucre_tokenAddress: PromiseOrValue<string>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<BigNumber>;
-
-    xucre_swapRouter(overrides?: CallOverrides): Promise<BigNumber>;
   };
 
   populateTransaction: {
@@ -733,6 +739,8 @@ export interface XucreETF extends BaseContract {
 
     paused(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
+    permit(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
     poolFee(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     renounceRole(
@@ -746,6 +754,8 @@ export interface XucreETF extends BaseContract {
       account: PromiseOrValue<string>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<PopulatedTransaction>;
+
+    router(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     spotExecution(
       to_xucre: PromiseOrValue<string>,
@@ -782,7 +792,5 @@ export interface XucreETF extends BaseContract {
       xucre_tokenAddress: PromiseOrValue<string>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<PopulatedTransaction>;
-
-    xucre_swapRouter(overrides?: CallOverrides): Promise<PopulatedTransaction>;
   };
 }

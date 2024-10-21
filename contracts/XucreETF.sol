@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
-pragma solidity 0.8.20;
+pragma solidity ^0.8.24;
 
 /// @title An ETF contract leveraging Uniswap V3
 /// @author Jordan Paul
@@ -8,7 +8,8 @@ pragma solidity 0.8.20;
 pragma abicoder v2;
 
 import "@uniswap/v3-periphery/contracts/libraries/TransferHelper.sol";
-import "@uniswap/v3-periphery/contracts/interfaces/ISwapRouter.sol";
+import "@uniswap/universal-router/contracts/interfaces/IUniversalRouter.sol";
+import "@uniswap/universal-router/lib/permit2/src/interfaces/IPermit2.sol";
 
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/utils/Pausable.sol";
@@ -25,8 +26,10 @@ contract XucreETF is Pausable, AccessControl {
 
     bytes32 public immutable PAUSER_ROLE;
     bytes32 public immutable BATCH_CALL_ROLE;
+    bytes1 private immutable V3_SWAP_EXACT_IN = 0x00;
 
-    ISwapRouter public immutable xucre_swapRouter;
+    IUniversalRouter public immutable router;
+    IPermit2 public immutable permit;
 
     address public feeToken;
     uint24 public poolFee;
@@ -37,6 +40,7 @@ contract XucreETF is Pausable, AccessControl {
     constructor(
         address owner_xucre,
         address swapRouter_xucre,
+        address permit_xucre,
         address tokenContract_xucre,
         uint24 poolFee_xucre
     ) {
@@ -45,7 +49,8 @@ contract XucreETF is Pausable, AccessControl {
         _grantRole(DEFAULT_ADMIN_ROLE, owner_xucre);
         _grantRole(PAUSER_ROLE, owner_xucre);
         _grantRole(BATCH_CALL_ROLE, owner_xucre);
-        xucre_swapRouter = ISwapRouter(swapRouter_xucre);
+        router = IUniversalRouter(swapRouter_xucre);
+        permit = IPermit2(permit_xucre);
         feeToken = tokenContract_xucre;
         poolFee = poolFee_xucre;
     }
@@ -125,19 +130,23 @@ contract XucreETF is Pausable, AccessControl {
         uint256 amountIn_xucre,
         uint24 fee_xucre,
         address pt_xucre,
-        address tokenOut_xucre
-    ) private returns (uint256 amountOut) {
-        ISwapRouter.ExactInputParams memory params = ISwapRouter
-            .ExactInputParams({
-                path: abi.encodePacked(pt_xucre, fee_xucre, tokenOut_xucre),
-                recipient: to_xucre,
-                deadline: block.timestamp,
-                amountIn: amountIn_xucre,
-                amountOutMinimum: 1
-            });
+        address tokenOut_xucre,
+        uint256 deadLine
+    ) private {
+        bytes memory commands = new bytes(1);
+        commands[0] = V3_SWAP_EXACT_IN;
+        
+        bytes[] memory inputs = new bytes[](1);
+        inputs[0] = abi.encode(
+            to_xucre,
+            amountIn_xucre,
+            1,
+            abi.encodePacked(pt_xucre, fee_xucre, tokenOut_xucre),
+            true
+        );
 
-        // Executes the swap.
-        return xucre_swapRouter.exactInput(params);
+        // Execute Swap
+        router.execute{value: msg.value}(commands, inputs, deadLine);
     }
 
     function performSwapBatch(
@@ -149,6 +158,7 @@ contract XucreETF is Pausable, AccessControl {
         address pt_xucre,
         bool cf_xucre
     ) private {
+        uint256 deadLine = block.timestamp + 300;
         require(
             tt_xucre.length == ia_xucre.length &&
                 ia_xucre.length == pf_xucre.length,
@@ -164,7 +174,6 @@ contract XucreETF is Pausable, AccessControl {
             totalInputAmounts == 10000,
             "Input amounts must add up to 10000"
         );
-
         // Validate wallet balance for source token
         if (pt_xucre != address(0)) {
             require(checkBalance(to_xucre, pt_xucre) >= ti_xucre, "Insufficient balance");
@@ -183,41 +192,36 @@ contract XucreETF is Pausable, AccessControl {
                 address(this),
                 ti_xucre
             );
-            // Approve the router to spend USDT.
-            TransferHelper.safeApprove(
-                pt_xucre,
-                address(xucre_swapRouter),
-                ti_xucre
-            );
+            // Approve the router to spend Source.
+            IERC20(pt_xucre).approve(address(permit), ti_xucre);
+            permit.approve(pt_xucre, address(router), uint160(ti_xucre), uint48(deadLine));
         }
         if (cf_xucre) {
-            ISwapRouter.ExactInputParams memory feeParams = ISwapRouter
-                .ExactInputParams({
-                    path: abi.encodePacked(pt_xucre, poolFee, feeToken),
-                    recipient: address(this),
-                    deadline: block.timestamp,
-                    amountIn: feeTotal,
-                    amountOutMinimum: 1
-                });
+            bytes memory commands = new bytes(1);
+            commands[0] = V3_SWAP_EXACT_IN;
+            
+            bytes[] memory inputs = new bytes[](1);
+            inputs[0] = abi.encode(
+                address(this),
+                feeTotal,
+                1,
+                abi.encodePacked(pt_xucre, poolFee, feeToken),
+                true
+            );
 
-            // Executes the fee swap.
-            xucre_swapRouter.exactInput(feeParams);
+            // Execute Swap
+            router.execute{value: msg.value}(commands, inputs, deadLine);
         }
-
         for (uint256 i = 0; i < tt_xucre.length; ++i) {
-            uint256 amountOut = swap(
+            swap(
                 to_xucre,
                 calculateFromPercent(totalAfterFees, ia_xucre[i]),
                 pf_xucre[i],
                 pt_xucre,
-                tt_xucre[i]
+                tt_xucre[i],
+                deadLine
             );
-            require(amountOut > 0, "Swap failed");
         }
-
-        /*uint256[2] memory resultingTotals;
-        resultingTotals = [_totalIn, totalIn];
-        return resultingTotals;*/
     }
 
     function checkBalance(
