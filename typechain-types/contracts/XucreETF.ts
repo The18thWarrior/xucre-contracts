@@ -34,6 +34,7 @@ export interface XucreETFInterface extends utils.Interface {
     "PAUSER_ROLE()": FunctionFragment;
     "calculateFromPercent(uint256,uint256)": FunctionFragment;
     "feeToken()": FunctionFragment;
+    "feesPaused()": FunctionFragment;
     "getRoleAdmin(bytes32)": FunctionFragment;
     "grantRole(bytes32,address)": FunctionFragment;
     "hasRole(bytes32,address)": FunctionFragment;
@@ -47,7 +48,7 @@ export interface XucreETFInterface extends utils.Interface {
     "spotExecution(address,address[],uint256[],uint24[],address,uint256)": FunctionFragment;
     "supportsInterface(bytes4)": FunctionFragment;
     "unpause()": FunctionFragment;
-    "update(uint24,address)": FunctionFragment;
+    "update(uint24,address,bool)": FunctionFragment;
     "withdrawBalance(address)": FunctionFragment;
     "withdrawTokenBalance(address,address)": FunctionFragment;
   };
@@ -59,6 +60,7 @@ export interface XucreETFInterface extends utils.Interface {
       | "PAUSER_ROLE"
       | "calculateFromPercent"
       | "feeToken"
+      | "feesPaused"
       | "getRoleAdmin"
       | "grantRole"
       | "hasRole"
@@ -94,6 +96,10 @@ export interface XucreETFInterface extends utils.Interface {
     values: [PromiseOrValue<BigNumberish>, PromiseOrValue<BigNumberish>]
   ): string;
   encodeFunctionData(functionFragment: "feeToken", values?: undefined): string;
+  encodeFunctionData(
+    functionFragment: "feesPaused",
+    values?: undefined
+  ): string;
   encodeFunctionData(
     functionFragment: "getRoleAdmin",
     values: [PromiseOrValue<BytesLike>]
@@ -137,7 +143,11 @@ export interface XucreETFInterface extends utils.Interface {
   encodeFunctionData(functionFragment: "unpause", values?: undefined): string;
   encodeFunctionData(
     functionFragment: "update",
-    values: [PromiseOrValue<BigNumberish>, PromiseOrValue<string>]
+    values: [
+      PromiseOrValue<BigNumberish>,
+      PromiseOrValue<string>,
+      PromiseOrValue<boolean>
+    ]
   ): string;
   encodeFunctionData(
     functionFragment: "withdrawBalance",
@@ -165,6 +175,7 @@ export interface XucreETFInterface extends utils.Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(functionFragment: "feeToken", data: BytesLike): Result;
+  decodeFunctionResult(functionFragment: "feesPaused", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "getRoleAdmin",
     data: BytesLike
@@ -307,6 +318,8 @@ export interface XucreETF extends BaseContract {
 
     feeToken(overrides?: CallOverrides): Promise<[string]>;
 
+    feesPaused(overrides?: CallOverrides): Promise<[boolean]>;
+
     getRoleAdmin(
       role: PromiseOrValue<BytesLike>,
       overrides?: CallOverrides
@@ -370,6 +383,7 @@ export interface XucreETF extends BaseContract {
     update(
       xucre_fee: PromiseOrValue<BigNumberish>,
       xucre_tokenAddress: PromiseOrValue<string>,
+      xucre_feesPaused: PromiseOrValue<boolean>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<ContractTransaction>;
 
@@ -398,6 +412,8 @@ export interface XucreETF extends BaseContract {
   ): Promise<BigNumber>;
 
   feeToken(overrides?: CallOverrides): Promise<string>;
+
+  feesPaused(overrides?: CallOverrides): Promise<boolean>;
 
   getRoleAdmin(
     role: PromiseOrValue<BytesLike>,
@@ -462,6 +478,7 @@ export interface XucreETF extends BaseContract {
   update(
     xucre_fee: PromiseOrValue<BigNumberish>,
     xucre_tokenAddress: PromiseOrValue<string>,
+    xucre_feesPaused: PromiseOrValue<boolean>,
     overrides?: Overrides & { from?: PromiseOrValue<string> }
   ): Promise<ContractTransaction>;
 
@@ -490,6 +507,8 @@ export interface XucreETF extends BaseContract {
     ): Promise<BigNumber>;
 
     feeToken(overrides?: CallOverrides): Promise<string>;
+
+    feesPaused(overrides?: CallOverrides): Promise<boolean>;
 
     getRoleAdmin(
       role: PromiseOrValue<BytesLike>,
@@ -550,6 +569,7 @@ export interface XucreETF extends BaseContract {
     update(
       xucre_fee: PromiseOrValue<BigNumberish>,
       xucre_tokenAddress: PromiseOrValue<string>,
+      xucre_feesPaused: PromiseOrValue<boolean>,
       overrides?: CallOverrides
     ): Promise<void>;
 
@@ -621,6 +641,8 @@ export interface XucreETF extends BaseContract {
 
     feeToken(overrides?: CallOverrides): Promise<BigNumber>;
 
+    feesPaused(overrides?: CallOverrides): Promise<BigNumber>;
+
     getRoleAdmin(
       role: PromiseOrValue<BytesLike>,
       overrides?: CallOverrides
@@ -684,6 +706,7 @@ export interface XucreETF extends BaseContract {
     update(
       xucre_fee: PromiseOrValue<BigNumberish>,
       xucre_tokenAddress: PromiseOrValue<string>,
+      xucre_feesPaused: PromiseOrValue<boolean>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<BigNumber>;
 
@@ -715,6 +738,8 @@ export interface XucreETF extends BaseContract {
     ): Promise<PopulatedTransaction>;
 
     feeToken(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
+    feesPaused(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     getRoleAdmin(
       role: PromiseOrValue<BytesLike>,
@@ -779,6 +804,7 @@ export interface XucreETF extends BaseContract {
     update(
       xucre_fee: PromiseOrValue<BigNumberish>,
       xucre_tokenAddress: PromiseOrValue<string>,
+      xucre_feesPaused: PromiseOrValue<boolean>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<PopulatedTransaction>;
 

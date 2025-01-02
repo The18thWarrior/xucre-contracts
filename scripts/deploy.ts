@@ -8,15 +8,16 @@ import { BigNumber } from "ethers";
 
 const deploy = false;
 
-const SWAP_ROUTER_ADDRESS = "0x3fC91A3afd70395Cd496C647d5a6CC9D4B2b7FAD";
+const SWAP_ROUTER_ADDRESS = "0xB971eF87ede563556b2ED4b1C0b0019111Dd85d2";
 const PERMIT2_ADDRESS = "0x000000000022D473030F116dDEE9F6B43aC78BA3";
-const DEV_ACCOUNT_ADDRESS = "0x19316109C70084D0E34C6b28AD5b6298aFB2dB3c";
-const OWNER_ADDRESS = "0x19316109C70084D0E34C6b28AD5b6298aFB2dB3c";
+const DEV_ACCOUNT_ADDRESS = process.env.DEVACCOUNTADDRESS as string;
+const OWNER_ADDRESS = process.env.DEVACCOUNTADDRESS as string;
 const DAI = "0x8f3Cf7ad23Cd3CaDbD9735AFf958023239c6A063";
 const USDT = "0xc2132D05D31c914a87C6611C10748AEb04B58e8F";
 const WETH = "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2"
 const WBTC = "0x1bfd67037b42cf73acf2047067bd4f2c47d9bfd6";
 const WMATIC = "0x0d500B1d8E8eF31E21C99d1Db9A6444d3ADf1270";
+const USDC = "";
 const UNI = async (signer: JsonRpcSigner) => {
   return await ERC20__factory.connect("0xb33EaAd8d922B1083446DC23f610c2567fB5180f", signer);
 }
@@ -57,34 +58,34 @@ async function test() {
     console.log('usdt brave balance', balanceUSDT2.toString());
   }
   
-  if (deploy) {
-    const Xucre = await ethers.getContractFactory("XucreETF");
-    const xucre = await Xucre.deploy(ethers.utils.getAddress(OWNER_ADDRESS), ethers.utils.getAddress(SWAP_ROUTER_ADDRESS), XUCRE_CONTRACT.address,poolFee);
-    await xucre.deployed();
-    console.log("XucreETF deployed to:", xucre.address);
+  // if (deploy) {
+  //   const Xucre = await ethers.getContractFactory("XucreETF");
+  //   const xucre = await Xucre.deploy(ethers.utils.getAddress(OWNER_ADDRESS), ethers.utils.getAddress(SWAP_ROUTER_ADDRESS), XUCRE_CONTRACT.address,poolFee);
+  //   await xucre.deployed();
+  //   console.log("XucreETF deployed to:", xucre.address);
     
-    const result = await USDT_CONTRACT.approve(xucre.address, ethers.utils.parseEther('100'));
+  //   const result = await USDT_CONTRACT.approve(xucre.address, ethers.utils.parseEther('100'));
 
-    console.log('approved', result.hash);
-    try {
-      const runSwap = await xucre.spotExecution(signerAddress, [ethers.utils.getAddress(DAI), ethers.utils.getAddress(WBTC), UNI_CONTRACT.address], [6000, 2000, 2000], [3000, 3000, 3000], USDT_CONTRACT.address, balanceUSDT.div(100));
-      const res2 = await runSwap.wait();
-      //const events = res2["events"] as unknown as Event[];
-      //console.log(JSON.stringify(events, null, 2))
-    } catch (err) {
-      console.log('error thrown');
-    }
+  //   console.log('approved', result.hash);
+  //   try {
+  //     const runSwap = await xucre.spotExecution(signerAddress, [ethers.utils.getAddress(DAI), ethers.utils.getAddress(WBTC), UNI_CONTRACT.address], [6000, 2000, 2000], [3000, 3000, 3000], USDT_CONTRACT.address, balanceUSDT.div(100));
+  //     const res2 = await runSwap.wait();
+  //     //const events = res2["events"] as unknown as Event[];
+  //     //console.log(JSON.stringify(events, null, 2))
+  //   } catch (err) {
+  //     console.log('error thrown');
+  //   }
 
-    const final_balance = await DAI_CONTRACT.balanceOf(signerAddress);
-    console.log('final DAI balance', final_balance.toString());
+  //   const final_balance = await DAI_CONTRACT.balanceOf(signerAddress);
+  //   console.log('final DAI balance', final_balance.toString());
 
-    const final_wbtcbalance = await WBTC_CONTRACT.balanceOf(signerAddress);
-    console.log('final WBTC balance', final_wbtcbalance.toString());
+  //   const final_wbtcbalance = await WBTC_CONTRACT.balanceOf(signerAddress);
+  //   console.log('final WBTC balance', final_wbtcbalance.toString());
 
-    const final_unibalance = await UNI_CONTRACT.balanceOf(signerAddress);
-    console.log('final UNI balance', final_unibalance.toString());
+  //   const final_unibalance = await UNI_CONTRACT.balanceOf(signerAddress);
+  //   console.log('final UNI balance', final_unibalance.toString());
   
-  }
+  // }
     
   return;
   //const name = await xucre.name();
@@ -104,7 +105,7 @@ async function main() {
 
   const XUCRE_CONTRACT = await XUCRE(signer);
   const WETH_CONTRACT = await ERC20__factory.connect(WETH, signer);
-  const FEE_TOKEN_CONTRACT = await ERC20__factory.connect('0x50c5725949A6F0c72E6C4a641F24049A917DB0Cb', signer);
+  const FEE_TOKEN_CONTRACT = await ERC20__factory.connect(USDC, signer);
   
   //if (deploy) {
     const Xucre = await ethers.getContractFactory("XucreETF");
@@ -117,7 +118,7 @@ async function main() {
     );
     await xucre.deployed();
     console.log("XucreETF deployed to:", xucre.address);
-    console.log(`verification script: npx hardhat verify --network <network> --contract contracts/XucreETF.sol:XucreETF ${xucre.address} ${ethers.utils.getAddress(OWNER_ADDRESS)} ${ethers.utils.getAddress(SWAP_ROUTER_ADDRESS)} ${FEE_TOKEN_CONTRACT.address} ${poolFee}`);
+    console.log(`verification script: npx hardhat verify --network <network> --contract contracts/XucreETF.sol:XucreETF ${xucre.address} ${ethers.utils.getAddress(OWNER_ADDRESS)} ${ethers.utils.getAddress(SWAP_ROUTER_ADDRESS)} ${ethers.utils.getAddress(PERMIT2_ADDRESS)} ${FEE_TOKEN_CONTRACT.address} ${poolFee}`);
   
   //}
     
@@ -127,9 +128,25 @@ async function main() {
 
 }
 
+async function deployXucre() {
+  // const signer = ethers.provider.getSigner(DEV_ACCOUNT_ADDRESS);
+  // const signerAddress = await signer.getAddress();
+  const name = 'Xucre';
+  const symbol = 'XRE';
+  const Xucre = await ethers.getContractFactory("Xucre");
+  const xucre = await Xucre.deploy(
+    ethers.utils.getAddress(OWNER_ADDRESS), 
+    name,
+    symbol
+  );
+  await xucre.deployed();
+  console.log("XucreETF deployed to:", xucre.address);
+  console.log(`verification script: npx hardhat verify --network <network> --contract contracts/Xucre.sol:Xucre ${xucre.address} ${ethers.utils.getAddress(OWNER_ADDRESS)} ${name} ${symbol}`);
+}
+
 // We recommend this pattern to be able to use async/await everywhere
 // and properly handle errors.
-main().catch((error) => {
+deployXucre().catch((error) => {
   console.error(error);
   //console.log('error thrown', error.message)
   process.exitCode = 1;

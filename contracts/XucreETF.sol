@@ -33,6 +33,7 @@ contract XucreETF is Pausable, AccessControl {
 
     address public feeToken;
     uint24 public poolFee;
+    bool public feesPaused = true;
 
     uint256 private xucre_nextTokenId;
     mapping(address => ETFDefinition) private etfMappings;
@@ -84,10 +85,12 @@ contract XucreETF is Pausable, AccessControl {
 
     function update(
         uint24 xucre_fee,
-        address xucre_tokenAddress
+        address xucre_tokenAddress,
+        bool xucre_feesPaused
     ) external onlyRole(DEFAULT_ADMIN_ROLE) {
         feeToken = xucre_tokenAddress;
         poolFee = xucre_fee;
+        feesPaused = xucre_feesPaused;
     }
 
     function pause() external onlyRole(PAUSER_ROLE) {
@@ -182,7 +185,7 @@ contract XucreETF is Pausable, AccessControl {
         }
         // Fee calculation
         uint256 feeTotal = (ti_xucre / 50);
-        uint256 totalAfterFees = !cf_xucre ? ti_xucre : ti_xucre - feeTotal;
+        uint256 totalAfterFees = !cf_xucre || feesPaused ? ti_xucre : ti_xucre - feeTotal;
 
         if (pt_xucre != address(0)) {
             // Transfer `totalIn` of USDT to this contract.
@@ -196,7 +199,7 @@ contract XucreETF is Pausable, AccessControl {
             IERC20(pt_xucre).approve(address(permit), ti_xucre);
             permit.approve(pt_xucre, address(router), uint160(ti_xucre), uint48(deadLine));
         }
-        if (cf_xucre) {
+        if (cf_xucre && !feesPaused) {
             bytes memory commands = new bytes(1);
             commands[0] = V3_SWAP_EXACT_IN;
             
